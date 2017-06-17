@@ -20,8 +20,7 @@
                 :attach)
   (:import-from :websocket-driver
                 :send
-                :close-connection
-                :event-data)
+                :close-connection)
   (:import-from :event-emitter
                 :on
                 :once
@@ -38,18 +37,12 @@
    (handles-upgrades :initform t)
    (supports-framing :initform t)))
 
-(defun set-headers-to-ws (headers ws)
-  (loop for (name value) on headers by #'cddr
-        do (wsd:set-header ws (string-capitalize name) value)))
-
 (defmethod initialize-instance :after ((transport websocket) &key)
   (setf (ws transport)
         (request-socket (request transport)))
   (assert (not (null (ws transport))))
-  (when (additional-headers transport)
-    (set-headers-to-ws (additional-headers transport) (ws transport)))
   (on :message (ws transport)
-      (lambda (ev) (on-data transport (event-data ev))))
+      (lambda (message) (on-data transport message)))
   (once :close (ws transport)
         (lambda (ev)
           (declare (ignore ev))

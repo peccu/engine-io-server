@@ -19,6 +19,7 @@
                :event-emitter
                :websocket-driver
                :cl-async
+               :cl-async-future
                :clack
                :unicly
                :babel

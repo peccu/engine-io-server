@@ -35,8 +35,8 @@
                 :bad-request
                 :server-error-code
                 :engine-error-description)
-  (:import-from :clack
-                :<component>
+  (:import-from :lack.component
+                :lack-component
                 :call)
   (:import-from :event-emitter
                 :event-emitter
@@ -46,7 +46,7 @@
   (:import-from :cl-async
                 :socket-closed)
   (:import-from :websocket-driver
-                :make-server-for-clack
+                :make-server
                 :start-connection
                 :close-connection)
   (:import-from :alexandria
@@ -58,7 +58,7 @@
 
 @export
 @export-accessors
-(defclass server (<component> event-emitter)
+(defclass server (lack-component event-emitter)
   ((app :initarg :app
         :initform nil
         :accessor app)
@@ -203,7 +203,7 @@
     (let ((upgrade (gethash "upgrade" (gethash :headers (env req)))))
       (if (and upgrade
                (string-equal upgrade "websocket"))
-          (let ((ws (wsd:make-server-for-clack (raw-env req))))
+          (let ((ws (wsd:make-server (raw-env req))))
             (lambda (responder)
               (let ((res (lambda (&rest args)
                            (handler-case (apply responder args)
